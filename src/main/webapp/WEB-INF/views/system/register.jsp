@@ -37,6 +37,14 @@
 
     $(function () {
 
+        // 给验证码的图片，绑定单击事件
+        $("#code_img").click(function () {
+            // 在事件响应的function函数中有一个this对象。这个this对象，是当前正在响应事件的dom对象
+            // src属性表示验证码img标签的 图片路径。它可读，可写
+            // alert(this.src);
+            this.src = "${pageContext.request.contextPath}/kaptcha.jpg?d=" + new Date();
+        });
+
         //jquery校验表单数据
         function validate_form(){
             //1、拿到要校验的数据，使用正则表达式
@@ -75,6 +83,7 @@
                 var tr = $("<tr height=\"30\"></tr>");
                 tr.append(td1).append(td2).appendTo("#myTbody");
                 $("#error_msg").append(msg);
+                $("#code_img").click();
             }
         };
 
@@ -118,10 +127,12 @@
                 data:$("#form").serialize(),
                 success:function(result){
                     //alert(result.msg);
-
                     if(result.code == 100){
                         window.location.href="index";
                     }else{
+                        if(result.extend.typess == "5"){
+                            show_validate_msg("error", result.extend.msg);
+                        }
                         if(undefined != result.extend.errorFields.loginname){
                             //显示登录账户名错误信息
                             show_validate_msg("error", result.extend.errorFields.loginname);
@@ -133,7 +144,9 @@
                         if(undefined != result.extend.errorFields.username){
                             //显示用户名的错误信息
                             show_validate_msg("error", result.extend.errorFields.username);
+
                         }
+
                     }
                 }
             });
@@ -201,6 +214,13 @@
 
                     </td>
                   </tr>
+                    <tr height="60">
+                        <td align="right"  style="width: 80px"><font color="#ff4e00">*</font>&nbsp;验&nbsp;证&nbsp;码 &nbsp;</td>
+                        <td>
+                            <input class="l_pwd" type="text" name="code" style="width: 100px;" id="code" />
+                            <img id="code_img" alt="" width="100px" height="40px" src="${pageContext.request.contextPath}/kaptcha.jpg" style="float: right;margin-right: 60px"/>
+                        </td>
+                    </tr>
                   <tr height="60">
                     <td>&nbsp;</td>
 

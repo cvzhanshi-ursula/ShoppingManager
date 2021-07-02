@@ -3,6 +3,7 @@ package cn.cvzhanshi.shop.controller;
 import cn.cvzhanshi.shop.entity.Msg;
 import cn.cvzhanshi.shop.entity.User;
 import cn.cvzhanshi.shop.service.UserService;
+import jdk.nashorn.internal.parser.TokenKind;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -168,6 +169,7 @@ public class SystemController {
         if(!loginname.matches(regx)){
             return Msg.fail().add("va_msg", "登录账号必须是6-16位数字和字母的组合");
         }
+
         //数据库用户名重复校验
         boolean b = userService.checkUser(loginname);
         if(b){
@@ -186,8 +188,16 @@ public class SystemController {
      */
     @ResponseBody
     @RequestMapping(value = "/save",method = RequestMethod.POST)
-    public Msg save(@Valid User user, BindingResult result,HttpServletRequest request){
+    public Msg save(@Valid User user, BindingResult result,
+                    @RequestParam(value = "code")String code,
+                    HttpServletRequest request){
         System.out.println(user);
+        // 获取 Session 中的验证码
+        String token = (String) request.getSession().getAttribute(KAPTCHA_SESSION_KEY);
+        // 删除 Session 中的验证码
+        request.getSession().removeAttribute(KAPTCHA_SESSION_KEY);
+        System.out.println(code);
+        System.out.println(token);
         if(result.hasErrors()){
             //校验失败，应该返回失败，在模态框中显示校验失败的错误信息
             Map<String, Object> map = new HashMap<>();
@@ -199,11 +209,14 @@ public class SystemController {
             }
             return Msg.fail().add("errorFields", map);
         }else{
-            System.out.println(user);
-
-            User user1 = userService.saveUser(user);
-            request.getSession().setAttribute("user",user1);
-            return Msg.success();
+            if(token!=null && token.equalsIgnoreCase(code.trim())){
+                System.out.println(user);
+                User user1 = userService.saveUser(user);
+                request.getSession().setAttribute("user",user1);
+                return Msg.success();
+            }else{
+                return Msg.fail().add("msg","验证码错误").add("typess","5");
+            }
         }
     }
 }
