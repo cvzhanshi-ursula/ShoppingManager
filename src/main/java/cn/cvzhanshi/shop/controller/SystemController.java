@@ -3,7 +3,9 @@ package cn.cvzhanshi.shop.controller;
 import cn.cvzhanshi.shop.entity.Msg;
 import cn.cvzhanshi.shop.entity.User;
 import cn.cvzhanshi.shop.service.UserService;
+import cn.cvzhanshi.shop.utils.MD5Utils;
 import jdk.nashorn.internal.parser.TokenKind;
+import org.omg.PortableInterceptor.USER_EXCEPTION;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -138,9 +140,14 @@ public class SystemController {
 //        System.out.println("loginname = "+ loginname);
 //        System.out.println("password = "+ password);
 //        System.out.println("token = "+ token);
-
-
-        List<User> users = userService.loginByLoginAndPass(loginname, password);
+        String password_md5 = password;
+        try {
+            password_md5 = MD5Utils.md5(password, MD5Utils.KEY);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println("password_md5 == "+ password_md5);
+        List<User> users = userService.loginByLoginAndPass(loginname, password_md5);
         if(users.size() == 0){
             //System.out.println("账密错误");
             return Msg.fail().add("msg","账号或密码错误").add("typess","1");
@@ -210,6 +217,17 @@ public class SystemController {
             return Msg.fail().add("errorFields", map);
         }else{
             if(token!=null && token.equalsIgnoreCase(code.trim())){
+                System.out.println(user);
+
+
+                try {
+                    String md5 = MD5Utils.md5(user.getPassword(), MD5Utils.KEY);
+                    user.setPassword(md5);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                System.out.println("=====================");
                 System.out.println(user);
                 User user1 = userService.saveUser(user);
                 request.getSession().setAttribute("user",user1);

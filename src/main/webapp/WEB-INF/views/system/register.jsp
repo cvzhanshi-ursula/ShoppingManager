@@ -177,8 +177,8 @@
 		<div class="reg_c">
         	<form id="form" method="post">
                 <table border="0" style="width:420px; font-size:14px; margin-top:20px;" cellspacing="0" cellpadding="0">
-                    <tr height="50" valign="top">
-                        <td style="width: 80px">&nbsp;</td>
+
+                    <tr height="50" valign="top">                        <td style="width: 80px">&nbsp;</td>
                         <td >
                             <span class="fl" style="font-size:24px;">注册</span>
                             <span class="fr">已有账号，<a href="login" style="color:#ff4e00;">立即登录</a></span>

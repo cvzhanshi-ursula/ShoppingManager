@@ -9,8 +9,8 @@ public class User {
             ,message="登录账号必须是6-16位英文和数字的组合")
     private String loginname;
 
-    @Pattern(regexp="(^[a-zA-Z0-9_-]{6,16}$)"
-            ,message="密码必须是6-16位英文和数字的组合")
+    @Pattern(regexp="(^[a-zA-Z0-9_-]{6,33}$)"
+            ,message="密码必须是6-33位英文和数字的组合")
     private String password;
 
     @Pattern(regexp="(^[a-zA-Z0-9_-]{6,16}$)"
